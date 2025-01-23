@@ -2,13 +2,14 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
+
 ## hyperparameters
 
 batch_size = 64
 block_size = 256
-max_iters = 5000
+max_iters = 2000
 eval_interval = 500
-learning_rate = 3e-4
+learning_rate = 1e-4
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")
 print(f"Using {device}")
 eval_iters = 200
@@ -16,6 +17,8 @@ n_embd = 384
 n_head = 6
 n_layer = 6
 dropout = 0.2
+generate_only = False  # Add a switch for generate only mode
+load_model = True
 ## ----
 
 with open("input.txt", 'r', encoding="utf-8") as f:
@@ -59,7 +62,6 @@ def estimate_loss():
     model.train()
     return out
 
-
 class Head(nn.Module):
     """one head of self-attention"""
     def __init__(self, head_size):
@@ -98,22 +100,6 @@ class MultiHeadAttention(nn.Module):
         out = self.dropout(self.proj(out))
         return out
 
-class LayerNorm():
-    def __init__(self, dim, eps=1e-5, momentum = 0.1):
-        self.eps = eps
-        self.gamma = torch.ones(dim).to(device)
-        self.beta = torch.zeros(dim).to(device)
-    
-    def __call__(self, x):
-        xmean = x.mean(1, keepdim = True)
-        xvar = x.var(1, keepdim = True)
-        xhat = (x-xmean) / torch.sqrt(xvar + self.eps)
-        self.out = self.gamma * xhat + self.beta
-        return self.out
-
-    def parameters(self):
-        return [self.gamma, self.beta]
-
 class FeedForward(nn.Module):
     """a simple linear layer followed by relu"""
     def __init__(self, n_embd):
@@ -135,8 +121,8 @@ class Block(nn.Module):
         head_size = n_embd // n_head
         self.sa = MultiHeadAttention(n_head, head_size)
         self.ffwd = FeedForward(n_embd)
-        self.ln1 = LayerNorm(n_embd)
-        self.ln2 = LayerNorm(n_embd)
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
     
     def forward(self, x):
         # Apply self-attention
@@ -190,33 +176,35 @@ class BigramLanguageModel(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1) # (B, 1)
             idx = torch.cat((idx, idx_next), dim = 1) # (B, T+1)
         return idx
-    
-model = BigramLanguageModel()
-model = model.to(device)
 
-optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+if __name__ == "__main__":
+    model = BigramLanguageModel()
+    if load_model:
+        model.load_state_dict(torch.load("final_model.pth"))
+    model = model.to(device)
 
-for iter in range(max_iters):
-    if iter % eval_interval == 0:
-        losses = estimate_loss()
-        print(f"Step {iter}: Train Loss = {losses['train']}, Validation Loss = {losses['val']}")
+    if not generate_only:
+        optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
-    xb, yb = get_batch("train")
+        for iter in range(max_iters):
+            if iter % eval_interval == 0:
+                losses = estimate_loss()
+                print(f"Step {iter}: Train Loss = {losses['train']}, Validation Loss = {losses['val']}")
 
-    logits, loss = model(xb,yb)
-    optimizer.zero_grad(set_to_none=True)
-    loss.backward()
-    optimizer.step()
+            xb, yb = get_batch("train")
 
-torch.save(model.state_dict(), "final_model.pth")
+            logits, loss = model(xb,yb)
+            optimizer.zero_grad(set_to_none=True)
+            loss.backward()
+            optimizer.step()
 
-context = torch.zeros((1,1), dtype=torch.long, device=device)
-generated_tokens = model.generate(context, max_new_tokens=10000)[0].tolist()
-generated_text = decode(generated_tokens)
+        torch.save(model.state_dict(), "final_model.pth")
 
-with open("more.txt", "w", encoding="utf-8") as f:
-    f.write(generated_text)
+    context = torch.zeros((1,1), dtype=torch.long, device=device)
+    generated_tokens = model.generate(context, max_new_tokens=10000)[0].tolist()
+    generated_text = decode(generated_tokens)
 
-print(generated_text[:500])  # Log the first 500 characters to console
+    with open("more.txt", "w", encoding="utf-8") as f:
+        f.write(generated_text)
 
-
+    print(generated_text[:500])  # Log the first 500 characters to console
