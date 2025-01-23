@@ -1,6 +1,8 @@
-# CCRU Procedural Generator
+# TinyCCRU
 
-Welcome to the **CCRU Procedural Generator**, a project inspired by the cryptic and avant-garde style of the Cybernetic Culture Research Unit (CCRU). This generator utilizes a transformer architecture, specifically drawing from Andrej Karpathy's "GPT from scratch" tutorial. It trains a Transformer to procedurally produce text that echoes the enigmatic, fragmented narratives characteristic of CCRU's work drawing from themes of accelerationism, AI, cosmic horror, techno-capitalism, memetics, and the occult.
+Welcome to **TinyCCRU**, a project inspired by the cryptic and avant-garde style of the Cybernetic Culture Research Unit (CCRU) and learning about Transformers. 
+
+This project utilizes a transformer architecture, specifically drawing from Andrej Karpathy's "GPT from scratch" tutorial. It trains a Transformer to procedurally produce text that echoes the enigmatic, fragmented narratives characteristic of CCRU's work drawing from themes of accelerationism, AI, cosmic horror, techno-capitalism, memetics, and the occult. It is trained on a .txt version of the entirety of the CCRU manifesto.
 
 #### Video
 Click on thumbnail to see tinyCCRU in action
