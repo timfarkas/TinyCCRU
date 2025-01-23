@@ -8,6 +8,9 @@ model.load_state_dict(torch.load("final_model.pth", map_location=device))
 model = model.to(device)
 model.eval()
 
+## wait between generations if on GPU 
+wait = True if device == "cuda" else False
+
 # Generate tokens indefinitely and print in real time
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 
@@ -17,6 +20,8 @@ while True:
     generated_tokens = model.generate(context, max_new_tokens=5)[0].tolist()
     generated_text = decode(generated_tokens)
     print(generated_text[-5:], end='', flush=True)
-    # Update context with the whole generated tokens
+    
     context = torch.tensor([generated_tokens], dtype=torch.long, device=device)
-    time.sleep(0.05)  # wait 1ms
+    
+    if wait:
+        time.sleep(0.05) 

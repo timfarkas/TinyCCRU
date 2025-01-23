@@ -1,3 +1,8 @@
+"""
+This is more or less entirely based on Andrej Karpathy's amazing GPT from scratch tutorial, credits go to him.
+"""
+
+
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
@@ -17,7 +22,7 @@ n_embd = 384
 n_head = 6
 n_layer = 6
 dropout = 0.2
-generate_only = False  # Add a switch for generate only mode
+generate_only = False  
 load_model = True
 ## ----
 
