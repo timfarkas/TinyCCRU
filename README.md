@@ -4,13 +4,14 @@ Welcome to **TinyCCRU**, a project inspired by the cryptic and avant-garde style
 
 This project utilizes a transformer architecture, specifically drawing from Andrej Karpathy's "GPT from scratch" tutorial. It trains a Transformer to procedurally produce text that echoes the enigmatic, fragmented narratives characteristic of CCRU's work drawing from themes of accelerationism, AI, cosmic horror, techno-capitalism, memetics, and the occult. It is trained on a .txt version of the entirety of the CCRU manifesto.
 
-#### Video
-Click on thumbnail to see tinyCCRU in action
-[![tinyCCRU in action](https://pbs.twimg.com/ext_tw_video_thumb/1882391152986329089/pu/img/sYYVd8dnlmA5ZJ91.jpg)](https://x.com/FarkasTim/status/1882392934588489959 "tinyCCRU in action")
+#### Demo
+https://github.com/user-attachments/assets/84b5edea-5404-4e19-a0b0-b9d8eeda0481
+![tinyCCRU on X](https://x.com/FarkasTim/status/1882392934588489959 "tinyCCRU in action")
+
 
 ## Features
 
-- **Transformer Architecture**: Utilizes a 6-block multi-head self-attention transformer model to generate impressionist CCRU text sequences.
+- **Transformer Architecture**: Utilizes a 6-block multi-head self-attention transformer model to generate endless impressionist CCRU text sequences.
 - **Real-time Generation**: Capable of generating text in real-time, simulating the continuous flow of CCRU's thought processes.
 - **Customizable Parameters**: Adjust hyperparameters such as batch size, block size, and learning rate to fine-tune the generation process.
 
